@@ -1,0 +1,1700 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>AI Job Agent | Autonomous Job Application Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: #05050a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            opacity: 0.35;
+        }
+
+        .gradient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.12), rgba(0, 0, 0, 0.92));
+            z-index: -1;
+        }
+
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0a0a15;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 10px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        nav {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 1400px;
+            background: rgba(10, 10, 26, 0.7);
+            backdrop-filter: blur(20px);
+            border-radius: 80px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            z-index: 1000;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        nav.scrolled {
+            top: 0;
+            border-radius: 0;
+            background: rgba(5, 5, 10, 0.95);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 32px;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #60a5fa, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            cursor: pointer;
+        }
+
+        .logo span {
+            background: none;
+            -webkit-background-clip: unset;
+            color: #ffffff;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            font-weight: 500;
+            color: #cbd5e1;
+            transition: 0.3s;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: #60a5fa;
+        }
+
+        .btn-glow {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            padding: 10px 24px;
+            border-radius: 60px;
+            color: white !important;
+            font-weight: 600;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s;
+        }
+
+        .btn-glow:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px rgba(59, 130, 246, 0.6);
+        }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            padding-top: 80px;
+        }
+
+        .hero-badge {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            padding: 8px 20px;
+            border-radius: 60px;
+            font-size: 0.8rem;
+            backdrop-filter: blur(10px);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 4.8rem;
+            font-weight: 800;
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #ffffff, #94a3b8, #60a5fa);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #60a5fa, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 48px;
+            margin: 48px 0;
+            flex-wrap: wrap;
+        }
+
+        .hero-stat h3 {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #60a5fa;
+        }
+
+        .hero-stat p {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 28px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .glass-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(59, 130, 246, 0.4);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .section-title {
+            text-align: center;
+            margin: 80px 0 40px;
+        }
+
+        .section-title .badge {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            padding: 6px 16px;
+            border-radius: 60px;
+            font-size: 0.75rem;
+            margin-bottom: 16px;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+        }
+
+        .section-title p {
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin: 60px 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 32px 20px;
+        }
+
+        .stat-card i {
+            font-size: 2.5rem;
+            color: #60a5fa;
+            margin-bottom: 16px;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            margin: 60px 0;
+        }
+
+        .feature-card {
+            padding: 40px 28px;
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            margin-bottom: 24px;
+        }
+
+        .how-it-works {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin: 60px 0;
+        }
+
+        .step-card {
+            text-align: center;
+            padding: 32px 20px;
+        }
+
+        .step-number {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 0 auto 20px;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+            margin: 60px 0;
+        }
+
+        .testimonial-card {
+            padding: 32px;
+            position: relative;
+        }
+
+        .testimonial-card i.fa-quote-left {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            font-size: 2rem;
+            color: rgba(96, 165, 250, 0.2);
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            border-radius: 48px;
+            padding: 60px;
+            text-align: center;
+            margin: 60px 0;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary-lg {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            padding: 16px 40px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: none;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-primary-lg:hover {
+            transform: scale(1.05);
+        }
+
+        /* Dashboard Styles */
+        .dashboard-container {
+            padding: 120px 32px 60px;
+        }
+
+        .dashboard-card {
+            background: rgba(15, 15, 30, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 32px;
+            padding: 32px;
+        }
+
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+
+        .kpi-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
+            border-radius: 28px;
+            padding: 28px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+
+        /* Job Queue - Only in Dashboard */
+        .job-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 24px;
+            margin: 16px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            transition: all 0.3s;
+        }
+
+        .job-card:hover {
+            border-color: rgba(59, 130, 246, 0.4);
+            transform: translateX(5px);
+        }
+
+        .match-score {
+            background: linear-gradient(135deg, #10b981, #059669);
+            padding: 6px 16px;
+            border-radius: 60px;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .apply-btn {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border: none;
+            padding: 12px 28px;
+            border-radius: 60px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .apply-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+        }
+
+        .apply-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .ai-status {
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 20px;
+            padding: 20px;
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            margin-top: 12px;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .pricing-cards {
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 60px 0;
+        }
+
+        .pricing-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            padding: 48px 32px;
+            flex: 1;
+            min-width: 280px;
+            transition: all 0.4s;
+            position: relative;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-12px);
+            border-color: #3b82f6;
+        }
+
+        .pricing-card.popular {
+            border: 2px solid #3b82f6;
+        }
+
+        .price {
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 24px 0;
+        }
+
+        .hidden-page {
+            display: none;
+        }
+
+        .active-page {
+            display: block;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .job-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .job-table th,
+        .job-table td {
+            text-align: left;
+            padding: 14px 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .chat-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 10000;
+        }
+
+        .chat-button {
+            width: 65px;
+            height: 65px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-button:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-window {
+            position: fixed;
+            bottom: 110px;
+            right: 30px;
+            width: 380px;
+            height: 500px;
+            background: rgba(10, 10, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-window.open {
+            display: flex;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .chat-message {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .chat-message.user {
+            justify-content: flex-end;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .message-bubble {
+            max-width: 75%;
+            padding: 10px 14px;
+            border-radius: 18px;
+            font-size: 0.85rem;
+        }
+
+        .chat-message.bot .message-bubble {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .chat-message.user .message-bubble {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
+        }
+
+        .chat-input-area {
+            padding: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 60px;
+            padding: 10px 16px;
+            color: white;
+        }
+
+        .chat-send {
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            color: white;
+        }
+
+        .quick-replies {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 12px 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .quick-reply {
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 60px;
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            cursor: pointer;
+        }
+
+        footer {
+            background: rgba(5, 5, 12, 0.98);
+            border-top: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 80px 0 40px;
+            margin-top: 100px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.5), transparent);
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1.5fr repeat(3, 1fr);
+            gap: 48px;
+            margin-bottom: 60px;
+        }
+
+        .footer-col h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: #ffffff;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .footer-col p {
+            color: #94a3b8;
+            line-height: 1.6;
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #94a3b8;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 0.95rem;
+            display: inline-block;
+        }
+
+        .footer-links a:hover {
+            color: #60a5fa;
+            transform: translateX(5px);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 16px;
+        }
+
+        .social-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #ffffff;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-decoration: none;
+        }
+
+        .social-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #3b82f6;
+            transform: translateY(-3px);
+            color: #60a5fa;
+        }
+
+        .footer-bottom {
+            padding-top: 40px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .copyright {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .optivra-credit {
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        .optivra-credit strong {
+            background: linear-gradient(135deg, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        @media (max-width: 968px) {
+            .container {
+                padding: 0 20px;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .how-it-works {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .job-card {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .chat-window {
+                width: calc(100vw - 40px);
+                right: 20px;
+            }
+        }
+
+        @media (max-width: 568px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .how-it-works {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-links a:not(.btn-glow) {
+                display: none;
+            }
+        }
+
+        /* Lead Capture Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2147483647;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .modal-content {
+            background: rgba(15, 15, 30, 0.95);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 32px;
+            padding: 48px;
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 12px 16px;
+            color: #ffffff;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.05);
+        }
+
+        /* Subscribe Section */
+        .subscribe-section {
+            padding: 100px 0;
+            background: linear-gradient(180deg, transparent, rgba(59, 130, 246, 0.05));
+            text-align: center;
+        }
+
+        .subscribe-card {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 40px;
+            padding: 60px 40px;
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .subscribe-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1), transparent 70%);
+            pointer-events: none;
+        }
+
+        .subscribe-form {
+            display: flex;
+            gap: 16px;
+            max-width: 500px;
+            margin: 32px auto 0;
+        }
+
+        @media (max-width: 768px) {
+            .subscribe-form {
+                flex-direction: column;
+            }
+
+            .modal-content {
+                padding: 32px 24px;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <video class="video-bg" autoplay loop muted playsinline>
+        <source
+            src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-futuristic-technology-1143-large.mp4"
+            type="video/mp4">
+    </video>
+    <div class="gradient-overlay"></div>
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- LEAD CAPTURE MODAL (MOVED TO TOP FOR VISIBILITY) -->
+    <div class="modal-overlay" id="leadModal" style="display: none;">
+        <div class="modal-content">
+            <button class="modal-close" id="closeLeadModal">&times;</button>
+            <div style="text-align: center; margin-bottom: 32px;">
+                <div class="hero-badge">🎁 FREE DEMO ACCESS</div>
+                <h2 style="font-size: 1.8rem; margin: 16px 0;">Unlock Your <br><span class="gradient-text">AI Powered
+                        Future</span></h2>
+                <p style="color: #94a3b8; font-size: 0.95rem;">Fill in your details to explore the AI Job Agent
+                    Dashboard.</p>
+            </div>
+            <form id="leadCaptureForm">
+                <div class="form-group">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-input" id="leadName" placeholder="Enter your name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Work Email</label>
+                    <input type="email" class="form-input" id="leadEmail" placeholder="name@company.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Target Role</label>
+                    <input type="text" class="form-input" id="leadRole" placeholder="e.g. Senior Frontend Developer"
+                        required>
+                </div>
+                <button type="submit" class="btn-primary-lg" style="width: 100%; border: none; margin-top: 10px;">Get
+                    Instant Access →</button>
+            </form>
+            <p style="text-align: center; margin-top: 24px; font-size: 0.8rem; color: #64748b;">By clicking, you agree
+                to our Terms and privacy policy.</p>
+        </div>
+    </div>
+
+    <nav id="navbar">
+        <div class="nav-container">
+            <div class="logo" data-page="home">AIJOB<span>AGENT</span></div>
+            <div class="nav-links">
+                <a href="javascript:void(0)" data-page="home" class="active">Home</a>
+                <a href="javascript:void(0)" data-page="pricing">Pricing</a>
+                <a href="javascript:void(0)" class="btn-glow" onclick="handleDemoClick(); return false;"
+                    id="mainTryDemoNav">Try Demo →</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HOME PAGE - Clean, No Jobs Here -->
+    <div id="home-page" class="active-page">
+        <div class="hero">
+            <div class="container">
+                <div class="hero-badge">🤖 AUTONOMOUS AI JOB APPLICATION ENGINE</div>
+                <h1>AI That Applies<br>to <span class="gradient-text">High-Probability Jobs</span></h1>
+                <p style="font-size: 1.2rem; margin: 32px 0; max-width: 600px; color: #cbd5e1;">Our AI analyzes your
+                    resume, finds jobs with 85%+ match, tailors your application, and applies automatically. <strong>3x
+                        higher interview rate.</strong></p>
+                <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                    <a href="javascript:void(0)" class="btn-primary-lg" onclick="handleDemoClick(); return false;"
+                        style="text-decoration: none;">Check All Functions →</a>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <h3>2,847+</h3>
+                        <p>Interviews secured</p>
+                    </div>
+                    <div class="hero-stat">
+                        <h3>94%</h3>
+                        <p>Recruiter acceptance</p>
+                    </div>
+                    <div class="hero-stat">
+                        <h3>15min</h3>
+                        <p>Setup time</p>
+                    </div>
+                    <div class="hero-stat">
+                        <h3>19%</h3>
+                        <p>Interview rate</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="stats-grid">
+                <div class="glass-card stat-card"><i class="fas fa-robot"></i>
+                    <h3>10,000+</h3>
+                    <p>Applications Processed</p>
+                </div>
+                <div class="glass-card stat-card"><i class="fas fa-chart-line"></i>
+                    <h3>94%</h3>
+                    <p>Match Accuracy</p>
+                </div>
+                <div class="glass-card stat-card"><i class="fas fa-clock"></i>
+                    <h3>15+ hrs</h3>
+                    <p>Saved Per Week</p>
+                </div>
+                <div class="glass-card stat-card"><i class="fas fa-star"></i>
+                    <h3>4.9/5</h3>
+                    <p>User Rating</p>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <div class="badge">⚙️ HOW AI AUTO-APPLY WORKS</div>
+                <h2>Fully Autonomous <span class="gradient-text">Application System</span></h2>
+            </div>
+            <div class="how-it-works">
+                <div class="glass-card step-card">
+                    <div class="step-number">1</div>
+                    <h3>Upload Resume</h3>
+                    <p>Share your master resume once. AI learns your skills and experience.</p>
+                </div>
+                <div class="glass-card step-card">
+                    <div class="step-number">2</div>
+                    <h3>AI Scans Jobs</h3>
+                    <p>Scores 10,000+ jobs daily for match accuracy (85%+ threshold).</p>
+                </div>
+                <div class="glass-card step-card">
+                    <div class="step-number">3</div>
+                    <h3>Smart Tailoring</h3>
+                    <p>Customizes your resume for each job description automatically.</p>
+                </div>
+                <div class="glass-card step-card">
+                    <div class="step-number">4</div>
+                    <h3>Auto-Apply</h3>
+                    <p>Submits applications with human-like timing and tracking.</p>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <div class="badge">💡 WHY CHOOSE US</div>
+                <h2>AI-Powered <span class="gradient-text">Intelligence</span></h2>
+            </div>
+            <div class="features-grid">
+                <div class="glass-card feature-card">
+                    <div class="feature-icon"><i class="fas fa-brain"></i></div>
+                    <h3>Intelligent Matching</h3>
+                    <p>AI analyzes 50+ parameters per job — only top matches make it.</p>
+                </div>
+                <div class="glass-card feature-card">
+                    <div class="feature-icon"><i class="fas fa-file-alt"></i></div>
+                    <h3>Dynamic Resume Tailoring</h3>
+                    <p>Each application gets a unique, optimized resume.</p>
+                </div>
+                <div class="glass-card feature-card">
+                    <div class="feature-icon"><i class="fas fa-robot"></i></div>
+                    <h3>Safe Automation</h3>
+                    <p>Human-like delays — never get banned from job portals.</p>
+                </div>
+                <div class="glass-card feature-card">
+                    <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                    <h3>Interview Prediction</h3>
+                    <p>Real-time probability score for each application.</p>
+                </div>
+                <div class="glass-card feature-card">
+                    <div class="feature-icon"><i class="fas fa-envelope"></i></div>
+                    <h3>Follow-up Automation</h3>
+                    <p>Automatic follow-ups to recruiters.</p>
+                </div>
+                <div class="glass-card feature-card">
+                    <div class="feature-icon"><i class="fas fa-chart-pie"></i></div>
+                    <h3>Analytics Dashboard</h3>
+                    <p>Track your application-to-interview conversion.</p>
+                </div>
+            </div>
+
+            <div class="section-title">
+                <div class="badge">💬 SUCCESS STORIES</div>
+                <h2>Trusted by <span class="gradient-text">10,000+</span> professionals</h2>
+            </div>
+            <div class="testimonials-grid">
+                <div class="glass-card testimonial-card"><i class="fas fa-quote-left"></i>
+                    <p>"Applied to 12 jobs, got 5 interviews in 2 weeks. Game changer!"</p>
+                    <div style="margin-top: 20px;"><strong>Priya Sharma</strong><br><span
+                            style="color:#f59e0b;">★★★★★</span></div>
+                </div>
+                <div class="glass-card testimonial-card"><i class="fas fa-quote-left"></i>
+                    <p>"The AI tailoring is incredibly accurate. Best investment for my career."</p>
+                    <div style="margin-top: 20px;"><strong>Rahul Mehta</strong><br><span
+                            style="color:#f59e0b;">★★★★★</span></div>
+                </div>
+                <div class="glass-card testimonial-card"><i class="fas fa-quote-left"></i>
+                    <p>"Saved me 20+ hours of manual work. Interview rate is phenomenal."</p>
+                    <div style="margin-top: 20px;"><strong>Anjali Nair</strong><br><span
+                            style="color:#f59e0b;">★★★★★</span></div>
+                </div>
+            </div>
+
+            <div class="cta-section">
+                <h2 style="font-size: 2rem;">Ready to Transform Your Job Search?</h2>
+                <p style="color:#94a3b8; margin: 20px 0;">Join 10,000+ professionals using our AI auto-apply platform.
+                </p>
+                <a href="javascript:void(0)" class="btn-primary-lg" data-page="dashboard"
+                    style="text-decoration: none;">Check All Functions →</a>
+                <p style="margin-top: 20px; font-size: 0.8rem; color:#64748b;">No credit card required • Cancel anytime
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- DASHBOARD PAGE - Jobs and Auto-Apply Here -->
+    <div id="dashboard-page" class="hidden-page">
+        <div class="dashboard-container">
+            <div class="container">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 48px;">
+                    <div>
+                        <h2 style="font-size: 2rem;">📊 AI Application Dashboard</h2>
+                        <p style="color:#94a3b8;">Live tracking of auto-applied jobs</p>
+                    </div>
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button id="refreshJobsBtn" class="btn-glow" style="padding: 12px 28px;"><i
+                                class="fas fa-sync-alt"></i> Refresh</button>
+                        <button id="startAutoApplyBtn" class="btn-glow"
+                            style="padding: 12px 28px; background: linear-gradient(135deg, #10b981, #059669);"><i
+                                class="fas fa-play"></i> Auto-Apply All</button>
+                    </div>
+                </div>
+
+                <div class="kpi-grid">
+                    <div class="kpi-card"><span style="color:#94a3b8;">Total Applications</span>
+                        <h2 style="font-size: 2.5rem;" id="totalApps">0</h2><span style="color:#10b981;"><i
+                                class="fas fa-arrow-up"></i> +0 this week</span>
+                    </div>
+                    <div class="kpi-card"><span style="color:#94a3b8;">Interviews</span>
+                        <h2 style="font-size: 2.5rem;" id="totalInterviews">0</h2><span style="color:#10b981;">0%
+                            conversion</span>
+                    </div>
+                    <div class="kpi-card"><span style="color:#94a3b8;">Avg. Match Score</span>
+                        <h2 style="font-size: 2.5rem;">91<span style="font-size:1rem;">%</span></h2><span
+                            style="color:#10b981;">↑ High accuracy</span>
+                    </div>
+                    <div class="kpi-card"><span style="color:#94a3b8;">Jobs Analyzed</span>
+                        <h2 style="font-size: 2.5rem;">1,247</h2><span style="color:#10b981;">today</span>
+                    </div>
+                </div>
+
+                <!-- AI Status -->
+                <div class="ai-status">
+                    <i class="fas fa-brain" style="font-size: 2rem; color: #60a5fa;"></i>
+                    <p style="margin-top: 12px;"><strong>🤖 AI Status:</strong> Actively scanning 20+ job boards for
+                        85%+ matches</p>
+                    <span class="status-badge status-active"><i class="fas fa-circle"></i> Live - 1,247 jobs analyzed
+                        today</span>
+                </div>
+
+                <!-- High Probability Job Matches - Only Here -->
+                <div class="dashboard-card" style="margin-bottom: 32px;">
+                    <h3 style="margin-bottom: 24px;"><i class="fas fa-bullseye"></i> 🎯 High-Probability Job Matches
+                    </h3>
+                    <p style="color:#94a3b8; margin-bottom: 20px;">AI has analyzed and found these jobs with 85%+ match
+                        score. Ready for auto-apply.</p>
+                    <div id="jobQueueContainer"></div>
+                </div>
+
+                <!-- Recent Applications -->
+                <div class="dashboard-card">
+                    <h4 style="margin-bottom: 24px;"><i class="fas fa-history"></i> Recent AI Applications</h4>
+                    <div style="overflow-x: auto;">
+                        <table class="job-table">
+                            <thead>
+                                <tr style="border-bottom:1px solid rgba(255,255,255,0.1);">
+                                    <th style="padding:12px 8px;">Position</th>
+                                    <th>Match</th>
+                                    <th>Status</th>
+                                    <th>Applied On</th>
+                                </tr>
+                            </thead>
+                            <tbody id="job-list-dynamic"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- AI Insight -->
+                <div class="dashboard-card"
+                    style="margin-top: 32px; background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1));">
+                    <i class="fas fa-microchip" style="color:#60a5fa; font-size: 1.5rem;"></i>
+                    <strong style="margin-left: 12px;">🧠 AI Insight:</strong> Your resume shows strong technical
+                    skills. AI will prioritize similar roles for auto-apply. Expected interview rate: 19-24%.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRICING PAGE -->
+    <div id="pricing-page" class="hidden-page">
+        <div class="container" style="padding: 140px 32px 60px;">
+            <div style="text-align: center; max-width: 700px; margin: 0 auto;">
+                <div class="hero-badge" style="display: inline-block;">💰 SIMPLE, TRANSPARENT PRICING</div>
+                <h2 style="font-size: 2.5rem;">Choose Your Auto-Apply Plan</h2>
+                <p style="color:#94a3b8;">Start free, AI applies to high-match jobs automatically.</p>
+            </div>
+            <div class="pricing-cards">
+                <div class="pricing-card">
+                    <h3>Free</h3>
+                    <div class="price">₹0</div>
+                    <ul style="list-style: none; margin: 24px 0;">
+                        <li style="margin: 16px 0;"><i class="fas fa-check-circle" style="color:#10b981;"></i> Manual
+                            job matching</li>
+                        <li style="margin: 16px 0;"><i class="fas fa-check-circle" style="color:#10b981;"></i> 5
+                            applies/week</li>
+                        <li style="margin: 16px 0;"><i class="fas fa-check-circle" style="color:#10b981;"></i> Basic
+                            match scoring</li>
+                    </ul>
+                    <button class="btn-glow" style="width:100%; background: rgba(255,255,255,0.1);"
+                        data-page="dashboard">Get Started</button>
+                </div>
+                <div class="pricing-card popular">
+                    <div
+                        style="position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg,#3b82f6,#8b5cf6); padding: 6px 20px; border-radius: 60px; font-size: 0.8rem;">
+                        🔥 MOST POPULAR</div>
+                    <h3>Pro</h3>
+                    <div class="price">₹999 <span style="font-size:1rem;">/month</span></div>
+                    <ul style="list-style: none; margin: 24px 0;">
+                        <li style="margin: 16px 0;"><i class="fas fa-check-circle" style="color:#10b981;"></i> AI
+                            Auto-Apply</li>
+                        <li style="margin: 16px 0;"><i class="fas fa-check-circle" style="color:#10b981;"></i> Resume
+                            tailoring for each job</li>
+                        <li style="margin: 16px 0;"><i class="fas fa-check-circle" style="color:#10b981;"></i> Unlimited
+                            applications</li>
+                        <li style="margin: 16px 0;"><i class="fas fa-check-circle" style="color:#10b981;"></i> Priority
+                            matching</li>
+                    </ul>
+                    <button class="btn-glow" style="width:100%;" data-page="dashboard">Upgrade Now →</button>
+                </div>
+                <div class="pricing-card">
+                    <h3>Elite</h3>
+                    <div class="price">₹1999 <span style="font-size:1rem;">/month</span></div>
+                    <ul style="list-style: none; margin: 24px 0;">
+                        <li style="margin: 16px 0;"><i class="fas fa-check-circle" style="color:#10b981;"></i>
+                            Everything in Pro</li>
+                        <li style="margin: 16px 0;"><i class="fas fa-check-circle" style="color:#10b981;"></i> Hiring
+                            manager outreach</li>
+                        <li style="margin: 16px 0;"><i class="fas fa-check-circle" style="color:#10b981;"></i> Dedicated
+                            account manager</li>
+                    </ul>
+                    <button class="btn-glow" style="width:100%; background: rgba(255,255,255,0.1);"
+                        data-page="dashboard">Contact Sales</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUBSCRIBE SECTION -->
+    <section class="subscribe-section">
+        <div class="container">
+            <div class="subscribe-card">
+                <div class="hero-badge">📢 STAY UPDATED</div>
+                <h2 style="font-size: 2.5rem; margin-bottom: 16px;">AI Is Evolving Fast. <br><span
+                        class="gradient-text">Don't Get Left Behind.</span></h2>
+                <p style="color: #94a3b8; max-width: 600px; margin: 0 auto;">Join 15,000+ professionals receiving weekly
+                    AI career tips and early access to new automation features.</p>
+                <form class="subscribe-form" id="subscribeForm">
+                    <input type="email" class="form-input" placeholder="Enter your work email" required>
+                    <button type="submit" class="btn-glow"
+                        style="border: none; cursor: pointer; white-space: nowrap;">Subscribe Now</button>
+                </form>
+                <p style="margin-top: 20px; font-size: 0.8rem; color: #64748b;"><i class="fas fa-shield-alt"></i> No
+                    spam. Ever. Unsubscribe in one click.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="logo" style="margin-bottom: 20px;">AIJob<span>AGENT</span></div>
+                    <p>Empowering professionals through autonomous AI job application technology. Our vision is to
+                        eliminate the tedious parts of job hunting, allowing you to focus on growing your career.</p>
+                    <div class="social-links">
+                        <a href="#" class="social-btn"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-btn"><i class="fab fa-github"></i></a>
+                        <a href="#" class="social-btn"><i class="fab fa-discord"></i></a>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" data-page="home">Smart Search</a></li>
+                        <li><a href="#" data-page="dashboard">AI Dashboard</a></li>
+                        <li><a href="#" data-page="pricing">Pricing Plans</a></li>
+                        <li><a href="#" data-page="dashboard">Try Demo</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">Career Blog</a></li>
+                        <li><a href="#">Help Center</a></li>
+                        <li><a href="#">Success Stories</a></li>
+                        <li><a href="#">Interview Tips</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Company</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="copyright">&copy; 2026 AIJobAgent. All rights reserved.</div>
+                <div style="margin: 10px 0; font-size: 0.7rem; color: #475569;">
+                    <a href="javascript:void(0)" onclick="localStorage.removeItem('demoUnlocked'); location.reload();"
+                        style="color: inherit; text-decoration: underline;">Reset Demo Status (Testing Only)</a>
+                </div>
+                <div class="optivra-credit">
+                    Powered by <strong>Optivra</strong> — Innovating the future of recruitment
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Floating Chat Bot -->
+    <div class="chat-widget">
+        <div class="chat-button" id="chatButton"><i class="fas fa-comment-dots"></i></div>
+        <div class="chat-window" id="chatWindow">
+            <div class="chat-header">
+                <h4><i class="fas fa-robot"></i> AI Assistant</h4><button id="closeChat"
+                    style="background: none; border: none; color: white; cursor: pointer;">&times;</button>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="chat-message bot">
+                    <div class="message-avatar">🤖</div>
+                    <div class="message-bubble">Hi! I'm your AI Job Assistant. Go to Dashboard to see high-match jobs
+                        and start auto-apply!</div>
+                </div>
+            </div>
+            <div class="quick-replies">
+                <button class="quick-reply" data-msg="How does auto-apply work?">🤖 Auto-Apply</button>
+                <button class="quick-reply" data-msg="Show me jobs">🔍 Find Jobs</button>
+                <button class="quick-reply" data-msg="Interview tips">🎯 Interview Tips</button>
+                <button class="quick-reply" data-msg="Subscribe to updates">🔔 Subscribe</button>
+            </div>
+            <div class="chat-input-area"><input type="text" class="chat-input" id="chatInput"
+                    placeholder="Type your message..."><button class="chat-send" id="chatSend"><i
+                        class="fas fa-paper-plane"></i></button></div>
+        </div>
+    </div>
+
+
+
+    <script>
+        // Particle System
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        function createParticles() { particles = []; for (let i = 0; i < 150; i++) particles.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, radius: Math.random() * 2 + 1, alpha: Math.random() * 0.5 + 0.2, vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3 }); }
+        function animateParticles() { ctx.clearRect(0, 0, canvas.width, canvas.height); particles.forEach(p => { p.x += p.vx; p.y += p.vy; if (p.x < 0) p.x = canvas.width; if (p.x > canvas.width) p.x = 0; if (p.y < 0) p.y = canvas.height; if (p.y > canvas.height) p.y = 0; ctx.beginPath(); ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2); ctx.fillStyle = `rgba(96,165,250,${p.alpha})`; ctx.fill(); }); requestAnimationFrame(animateParticles); }
+        resizeCanvas(); createParticles(); animateParticles();
+
+        // Navbar Scroll
+        window.addEventListener('scroll', function () {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        // Navigation Logic
+        function showPage(pageId) {
+            console.log("Navigating to:", pageId);
+            var pages = ['home', 'dashboard', 'pricing'];
+            pages.forEach(function (p) {
+                var el = document.getElementById(p + "-page");
+                if (el) {
+                    el.classList.add('hidden-page');
+                    el.classList.remove('active-page');
+                }
+            });
+
+            var target = document.getElementById(pageId + "-page");
+            if (target) {
+                target.classList.remove('hidden-page');
+                target.classList.add('active-page');
+            }
+
+            document.querySelectorAll('[data-page]').forEach(function (link) {
+                if (link.getAttribute('data-page') === pageId) link.classList.add('active');
+                else link.classList.remove('active');
+            });
+
+            if (pageId === 'dashboard') renderDashboard();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Demo Gating Logic
+        function handleDemoClick() {
+            var modal = document.getElementById('leadModal');
+            if (modal) {
+                modal.style.display = 'flex';
+                modal.classList.add('active');
+            }
+        }
+
+        document.querySelectorAll('[data-page]').forEach(function (el) {
+            el.addEventListener('click', function (e) {
+                e.preventDefault();
+                var page = el.getAttribute('data-page');
+                if (page === 'dashboard') {
+                    handleDemoClick();
+                } else if (page) {
+                    showPage(page);
+                }
+            });
+        });
+
+        // Form Listeners
+        var leadForm = document.getElementById('leadCaptureForm');
+        if (leadForm) {
+            leadForm.addEventListener('submit', function (e) {
+                e.preventDefault();
+                var modal = document.getElementById('leadModal');
+                if (modal) {
+                    modal.style.display = 'none';
+                    modal.classList.remove('active');
+                }
+                localStorage.setItem('demoUnlocked', 'true');
+                showPage('dashboard');
+                showNotification("🚀 Demo Unlocked!", "Welcome! You can now explore the dashboard.");
+            });
+        }
+
+        document.getElementById('closeLeadModal')?.addEventListener('click', () => {
+            const modal = document.getElementById('leadModal');
+            if (modal) {
+                modal.style.display = 'none';
+                modal.classList.remove('active');
+            }
+        });
+
+        document.getElementById('subscribeForm')?.addEventListener('submit', function (e) {
+            e.preventDefault();
+            var email = this.querySelector('input').value;
+            showNotification("✅ Subscribed!", "Success! " + email + " has been added to our VIP list. Early access invited coming soon.");
+            this.reset();
+        });
+
+        // Job Data - High Match Jobs (Only in Dashboard)
+        let jobList = [
+            { id: 1, title: "Senior Frontend Engineer", company: "Tech Corp", location: "Remote", salary: "₹25-35 LPA", match: 94, applied: false, appliedDate: null },
+            { id: 2, title: "Full Stack Developer (AI)", company: "Innovation Labs", location: "Hybrid", salary: "₹28-38 LPA", match: 92, applied: false, appliedDate: null },
+            { id: 3, title: "Technical Product Manager", company: "ProductFirst", location: "Bangalore", salary: "₹30-40 LPA", match: 89, applied: false, appliedDate: null },
+            { id: 4, title: "Backend Engineer (Python)", company: "DataCore", location: "Remote", salary: "₹22-32 LPA", match: 96, applied: false, appliedDate: null },
+            { id: 5, title: "DevOps Engineer", company: "CloudScale", location: "Hybrid", salary: "₹24-34 LPA", match: 87, applied: false, appliedDate: null },
+            { id: 6, title: "React Native Developer", company: "MobileFirst", location: "Bangalore", salary: "₹20-30 LPA", match: 91, applied: false, appliedDate: null },
+            { id: 7, title: "AI/ML Engineer", company: "NeuralTech", location: "Remote", salary: "₹32-45 LPA", match: 95, applied: false, appliedDate: null },
+            { id: 8, title: "Cloud Architect", company: "AWS Partner", location: "Hybrid", salary: "₹35-50 LPA", match: 88, applied: false, appliedDate: null }
+        ];
+
+        let appliedJobs = [];
+
+        // Render Job Queue on Dashboard
+        function renderJobQueue() {
+            const container = document.getElementById('jobQueueContainer');
+            if (!container) return;
+            container.innerHTML = '';
+            const pendingJobs = jobList.filter(j => !j.applied);
+            if (pendingJobs.length === 0) {
+                container.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="fas fa-check-circle" style="font-size: 3rem; color: #10b981;"></i><p style="margin-top: 16px;">All jobs have been applied! AI will find more matches soon.</p></div>';
+                return;
+            }
+            pendingJobs.forEach(job => {
+                const matchClass = job.match >= 90 ? 'match-score' : 'match-score';
+                const jobCard = document.createElement('div');
+                jobCard.className = 'job-card';
+                jobCard.innerHTML = `
+                <div style="flex:2">
+                    <h3>${job.title}</h3>
+                    <p style="color:#94a3b8; margin-top:4px;">${job.company} • ${job.location} • ${job.salary}</p>
+                </div>
+                <div><span class="${matchClass}" style="background: ${job.match >= 90 ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #f59e0b, #ea580c)'};">${job.match}% Match</span></div>
+                <div><button class="apply-btn" onclick="applyForJob(${job.id})">🤖 AI Apply</button></div>
+            `;
+                container.appendChild(jobCard);
+            });
+        }
+
+        // Apply for single job
+        window.applyForJob = function (jobId) {
+            const job = jobList.find(j => j.id === jobId);
+            if (job && !job.applied) {
+                job.applied = true;
+                job.appliedDate = new Date().toLocaleDateString();
+                appliedJobs.unshift(job);
+
+                // Show success notification
+                showNotification(`✅ Applied to ${job.title}`, `AI tailored your resume and submitted application. Match score: ${job.match}%`);
+
+                renderJobQueue();
+                renderAppliedJobsTable();
+                updateKPIs();
+            }
+        }
+
+        // Auto-apply to all high-match jobs
+        window.autoApplyAll = function () {
+            const pendingJobs = jobList.filter(j => !j.applied && j.match >= 85);
+            if (pendingJobs.length === 0) {
+                showNotification("No pending jobs", "All high-match jobs have been applied already!", "info");
+                return;
+            }
+
+            let appliedCount = 0;
+            pendingJobs.forEach(job => {
+                job.applied = true;
+                job.appliedDate = new Date().toLocaleDateString();
+                appliedJobs.unshift(job);
+                appliedCount++;
+            });
+
+            renderJobQueue();
+            renderAppliedJobsTable();
+            updateKPIs();
+
+            showNotification(`✅ Auto-Apply Complete!`, `Applied to ${appliedCount} high-match jobs. Average match: ${Math.round(pendingJobs.reduce((sum, j) => sum + j.match, 0) / pendingJobs.length)}%`);
+        }
+
+        // Render applied jobs table
+        function renderAppliedJobsTable() {
+            const tbody = document.getElementById('job-list-dynamic');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            const allApplied = [...appliedJobs];
+            if (allApplied.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; padding: 40px;">No applications yet. Click "AI Apply" to start!</td></tr>';
+                return;
+            }
+            allApplied.slice(0, 10).forEach(job => {
+                const row = tbody.insertRow();
+                row.insertCell(0).innerHTML = `<strong>${job.title}</strong><br><span style="color:#94a3b8; font-size:0.75rem;">${job.company}</span>`;
+                row.insertCell(1).innerHTML = `<span style="background:rgba(16,185,129,0.2); padding:4px 12px; border-radius:30px;">${job.match}%</span>`;
+                row.insertCell(2).innerHTML = `<span style="color:#10b981;"><i class="fas fa-check-circle"></i> Applied by AI</span>`;
+                row.insertCell(3).innerHTML = job.appliedDate || 'Today';
+            });
+        }
+
+        // Update KPIs
+        function updateKPIs() {
+            const totalApps = appliedJobs.length;
+            const interviews = Math.floor(totalApps * 0.19);
+            document.getElementById('totalApps').innerText = totalApps;
+            document.getElementById('totalInterviews').innerText = interviews;
+        }
+
+        // Show notification
+        function showNotification(title, message, type = 'success') {
+            // Simple alert for demo - can be replaced with toast notification
+            alert(`${title}\n\n${message}`);
+        }
+
+        // Chart
+        let weeklyChart;
+        function initChart() {
+            const c = document.getElementById('weeklyChart')?.getContext('2d');
+            if (!c) return;
+            if (weeklyChart) weeklyChart.destroy();
+            weeklyChart = new Chart(c, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'This week'],
+                    datasets: [
+                        { label: 'Applications', data: [0, 0, 0, 0], borderColor: '#60a5fa', backgroundColor: 'rgba(96,165,250,0.1)', tension: 0.4, fill: true },
+                        { label: 'Interviews', data: [0, 0, 0, 0], borderColor: '#c084fc', backgroundColor: 'rgba(192,132,252,0.1)', tension: 0.4, fill: true }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { labels: { color: '#cbd5e1' } } } }
+            });
+        }
+
+        function updateChart() {
+            if (weeklyChart) {
+                const apps = appliedJobs.length;
+                weeklyChart.data.datasets[0].data = [Math.max(0, apps - 15), Math.max(0, apps - 10), Math.max(0, apps - 5), apps];
+                weeklyChart.data.datasets[1].data = [Math.max(0, Math.floor(apps * 0.19) - 3), Math.max(0, Math.floor(apps * 0.19) - 2), Math.max(0, Math.floor(apps * 0.19) - 1), Math.floor(apps * 0.19)];
+                weeklyChart.update();
+            }
+        }
+
+        function renderDashboard() {
+            renderJobQueue();
+            renderAppliedJobsTable();
+            updateKPIs();
+            updateChart();
+        }
+
+        // Event Listeners
+        document.getElementById('refreshJobsBtn')?.addEventListener('click', () => { renderDashboard(); showNotification("Refreshed", "AI has found updated job matches!"); });
+        document.getElementById('startAutoApplyBtn')?.addEventListener('click', () => { autoApplyAll(); });
+
+        // Chat Bot
+        const chatButton = document.getElementById('chatButton'), chatWindow = document.getElementById('chatWindow'), closeChat = document.getElementById('closeChat'), chatSend = document.getElementById('chatSend'), chatInput = document.getElementById('chatInput'), chatMessages = document.getElementById('chatMessages');
+        chatButton.onclick = () => chatWindow.classList.toggle('open'); closeChat.onclick = () => chatWindow.classList.remove('open');
+        function addChatMessage(msg, isUser = false) { const div = document.createElement('div'); div.className = `chat-message ${isUser ? 'user' : 'bot'}`; div.innerHTML = isUser ? `<div class="message-bubble">${msg}</div>` : `<div class="message-avatar">🤖</div><div class="message-bubble">${msg}</div>`; chatMessages.appendChild(div); chatMessages.scrollTop = chatMessages.scrollHeight; }
+        function getBotResponse(msg) {
+            const m = msg.toLowerCase();
+            if (m.includes('auto-apply') || m.includes('apply')) return "Go to Dashboard to see high-match jobs! Click 'AI Apply' for individual jobs or 'Auto-Apply All' for bulk applications.";
+            if (m.includes('job') || m.includes('find')) return "I've found 8 high-match jobs for you with 87-96% match scores. Check the Dashboard to apply!";
+            if (m.includes('interview')) return "Our AI has a 19% interview conversion rate. Top tip: Customize each application and highlight achievements!";
+            if (m.includes('subscrib') || m.includes('join')) return "You can join our 15,000+ members by filling out the email subscription form at the bottom of the page! We'll send you the latest AI career breakthroughs.";
+            return "Hi there! I'm your AI career assistant. You can try our demo, search for jobs, or subscribe to our newsletter for the latest AI insights!";
+        }
+        chatSend.onclick = () => { const msg = chatInput.value.trim(); if (msg) { addChatMessage(msg, true); setTimeout(() => addChatMessage(getBotResponse(msg)), 500); chatInput.value = ''; } };
+        chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') chatSend.click(); });
+        document.querySelectorAll('.quick-reply').forEach(btn => { btn.addEventListener('click', () => { const msg = btn.getAttribute('data-msg'); chatInput.value = msg; chatSend.click(); }); });
+
+        window.onload = () => {
+            initChart();
+            renderDashboard();
+            showPage('home');
+            gsap.from(".hero-badge", { opacity: 0, y: -30, duration: 0.8, delay: 0.2 });
+            gsap.from("h1", { opacity: 0, y: 30, duration: 0.8, delay: 0.4 });
+        };
+    </script>
+</body>
+
+</html>
